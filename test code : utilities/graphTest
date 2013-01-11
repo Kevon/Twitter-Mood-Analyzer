@@ -1,0 +1,51 @@
+import time
+
+from pyglet.gl import *
+
+
+window = pyglet.window.Window(800,600)
+
+class LineGraph:
+    def __init__(self):
+        self.currentPoint = (0,0)
+        self.previousPoint = (0,0)
+        self.lineList = []
+        self.currentTime = int(time.time())
+
+    def newPoint(self, y):
+        self.y = int(y)
+        self.previousPoint = self.currentPoint
+        self.currentPoint = ((int(time.time())-self.currentTime)*10, (self.y*5)+300)
+        if self.previousPoint != (0,0):
+            self.segment(self.previousPoint, self.currentPoint, 1)
+        print self.previousPoint, self.currentPoint
+        
+    def segment(self, start, end, w):
+        self.x1 = start[0]
+        self.x2 = end[0]
+        self.y1 = start[1]
+        self.y2 = end[1]
+        self.line = pyglet.graphics.vertex_list(4, ('v2f', [self.x1-w,self.y1-w, self.x2+w,self.y1-w, self.x2+w,self.y2+w, self.x1-w,self.y2+w]), ('c3f', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]))
+        self.lineList.append(self.line)
+
+    def update(self):
+        for line in self.lineList:
+            pass
+
+    def draw(self):
+        for line in self.lineList:
+            line.draw(GL_QUAD_STRIP)
+
+lineGraph = LineGraph()
+
+@window.event
+def on_draw():
+    bg = pyglet.graphics.vertex_list(4, ('v2f', [0,0, 800,0, 800,600, 0,600]), ('c3f', [1,1,1, 1,1,1, .75,.75,.75, .75,.75,.75]))
+    bg.draw(GL_POLYGON)
+
+    lineGraph.draw()
+
+while True:
+    i = range(100)
+    if i == 99:
+        lineGraph.newPoint(range(100))
